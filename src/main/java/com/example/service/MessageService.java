@@ -28,21 +28,22 @@ public class MessageService {
         return messageRepository.findById(messageId).orElse(null);
     }
 
-    public Message deleteMessageById(int messageId) {
+    public Integer deleteMessageById(int messageId) {
         Optional<Message> message = messageRepository.findById(messageId);
         if (message.isPresent()) {
             messageRepository.deleteById(messageId);
-            return message.get();
+            return 1;
         }
-        return null;
+        return 0;
     }
 
-    public Message updateMessageById(Message message) {
+    public Integer updateMessageById(Message message) {
         Optional<Message> existingMessage = messageRepository.findById(message.getMessageId());
         if (existingMessage.isPresent()) {
-            return messageRepository.save(message);
+            messageRepository.save(message);
+            return 1;
         }
-        return null;
+        return 0;
     }
 
     public List<Message> getAllMessages(int accountId) {

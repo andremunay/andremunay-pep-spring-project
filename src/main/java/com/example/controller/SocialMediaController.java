@@ -44,7 +44,7 @@ public class SocialMediaController {
                 || account.getPassword().length() < 4) {
             return ResponseEntity.badRequest().build(); // 400 Bad Request
         }
-        if (accountService.findByUsername(account.getUsername() != null)) {
+        if (accountService.findByUsername(account.getUsername())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409 Conflict
         }
         Account createdAccount = accountService.addAccount(account);
@@ -64,7 +64,7 @@ public class SocialMediaController {
     // Handler for posting a new message
     @PostMapping("/messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message message) {
-        if (message.getMessageText().isEmpty() || message.getMessageText().length() > 255) {
+        if (message.getMessageText().isEmpty() || message.getMessageText().length() > 255 || !accountService.doesAccountExistById(message.getMessageId())) {
             return ResponseEntity.badRequest().build(); // 400 Bad Request
         }
         Message createdMessage = messageService.addMessage(message);
@@ -90,27 +90,29 @@ public class SocialMediaController {
 
     // Handler for deleting a message by ID
     @DeleteMapping("/messages/{messageId}")
-    public ResponseEntity<Message> deleteMessageById(@PathVariable int messageId) {
-        Message deletedMessage = messageService.deleteMessageById(messageId);
-        if (deletedMessage == null) {
+    public ResponseEntity<Integer> deleteMessageById(@PathVariable int messageId) {
+        Integer rowsAffected = messageService.deleteMessageById(messageId);
+        if (rowsAffected == 0) {
             return ResponseEntity.ok().build(); // 200 Ok
         }
-        return ResponseEntity.ok(deletedMessage); // 200 Ok
+        return ResponseEntity.ok(rowsAffected); // 200 Ok
     }
 
     // Handler for updating a message by ID
     @PatchMapping("/messages/{messageId}")
-    public ResponseEntity<Message> updateMessage(@PathVariable int messageId, @RequestBody Message message) {
+    public ResponseEntity<Integer> updateMessage(@PathVariable int messageId, @RequestBody Message message) {
         message.setMessageId(messageId);
-        if (message.getMessageText().isEmpty() || message.getMessageText().length() > 255) {
+        Message existingMessage = messageService.getMessageById(messageId);
+
+        if (message.getMessageText().isEmpty() || message.getMessageText().length() > 255 || existingMessage == null) {
             return ResponseEntity.badRequest().build(); // 400 Bad Request
         }
-        Message updatedMessage = messageService.updateMessageById(message);
-        return ResponseEntity.ok(updatedMessage); // 200 Ok
+        Integer rowsAffected = messageService.updateMessageById(message);
+        return ResponseEntity.ok(rowsAffected); // 200 Ok
     }
 
     // Handler for retrieving all messages by account ID
-    @GetMapping("/account/{accountId}/messages")
+    @GetMapping("/accounts/{accountId}/messages")
     public ResponseEntity<List<Message>> getMessagesByAccountId(@PathVariable int accountId) {
         List<Message> messages = messageService.getAllMessages(accountId);
         return ResponseEntity.ok(messages); // 200 Ok

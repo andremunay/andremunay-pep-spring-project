@@ -19,9 +19,9 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    public boolean findByUsername(boolean exists) {
+    public boolean findByUsername(String username) {
         return accountRepository.findAll().stream()
-            .anyMatch(account -> exists == (account.getUsername() != null && !account.getUsername().isEmpty()));
+            .anyMatch(account -> username.equals(account.getUsername()));
     }
 
     public Account authenticate(String username, String password) {
@@ -29,5 +29,12 @@ public class AccountService {
             .filter(acc -> username.equals(acc.getUsername()) && password.equals(acc.getPassword()))
             .findFirst();
         return account.orElse(null);
+    }
+
+    public boolean doesAccountExistById(Integer accountId) {
+        if (accountId == null) {
+            return false;
+        }
+        return accountRepository.existsById(accountId);
     }
 }
