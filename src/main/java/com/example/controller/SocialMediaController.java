@@ -64,7 +64,7 @@ public class SocialMediaController {
     // Handler for posting a new message
     @PostMapping("/messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message message) {
-        if (message.getMessageText().isEmpty() || message.getMessageText().length() > 255 || !accountService.doesAccountExistById(message.getMessageId())) {
+        if (message.getMessageText().isEmpty() || message.getMessageText().length() > 255 || !accountService.doesAccountExistById(message.getPostedBy())) {
             return ResponseEntity.badRequest().build(); // 400 Bad Request
         }
         Message createdMessage = messageService.addMessage(message);
