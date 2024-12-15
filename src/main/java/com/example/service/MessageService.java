@@ -1,6 +1,7 @@
 package com.example.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -16,32 +17,37 @@ public class MessageService {
     }
 
     public Message addMessage(Message message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addMessage'");
+        return messageRepository.save(message);
     }
 
     public List<Message> getAllMessages() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllMessages'");
+        return messageRepository.findAll();
     }
 
     public Message getMessageById(int messageId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMessageById'");
+        return messageRepository.findById(messageId).orElse(null);
     }
 
     public Message deleteMessageById(int messageId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteMessageById'");
+        Optional<Message> message = messageRepository.findById(messageId);
+        if (message.isPresent()) {
+            messageRepository.deleteById(messageId);
+            return message.get();
+        }
+        return null;
     }
 
     public Message updateMessageById(Message message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateMessageById'");
+        Optional<Message> existingMessage = messageRepository.findById(message.getMessageId());
+        if (existingMessage.isPresent()) {
+            return messageRepository.save(message);
+        }
+        return null;
     }
 
     public List<Message> getAllMessages(int accountId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllMessages'");
+        return messageRepository.findAll().stream()
+            .filter(message -> message.getPostedBy() != null && message.getPostedBy().equals(accountId))
+            .toList();
     }
 }

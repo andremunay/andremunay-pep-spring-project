@@ -1,5 +1,7 @@
 package com.example.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.example.entity.Account;
@@ -14,17 +16,18 @@ public class AccountService {
     }
 
     public Account addAccount(Account account) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addAccount'");
+        return accountRepository.save(account);
     }
 
-    public boolean findByUsername(boolean b) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByUsername'");
+    public boolean findByUsername(boolean exists) {
+        return accountRepository.findAll().stream()
+            .anyMatch(account -> exists == (account.getUsername() != null && !account.getUsername().isEmpty()));
     }
 
     public Account authenticate(String username, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
+        Optional<Account> account = accountRepository.findAll().stream()
+            .filter(acc -> username.equals(acc.getUsername()) && password.equals(acc.getPassword()))
+            .findFirst();
+        return account.orElse(null);
     }
 }
