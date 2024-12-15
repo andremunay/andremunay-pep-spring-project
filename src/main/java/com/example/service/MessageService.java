@@ -2,6 +2,7 @@ package com.example.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,6 @@ public class MessageService {
     public List<Message> getAllMessages(int accountId) {
         return messageRepository.findAll().stream()
             .filter(message -> message.getPostedBy() != null && message.getPostedBy().equals(accountId))
-            .toList();
+            .collect(Collectors.toList());
     }
 }
